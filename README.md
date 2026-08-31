@@ -45,19 +45,29 @@ You don't need to implement game loops, gravity, collision detection, sprite tim
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Installation & Quick Start
 
 ### 1. Installation
 
+#### A. Install directly from GitHub (Recommended):
 ```bash
-npm install @living-web/sdk
+npm install github:kadiryildiz283/living-web
 ```
 
-Or load via standalone CDN / `<script>` tag:
-
+#### B. Or load via jsDelivr CDN directly into HTML:
 ```html
-<script src="dist/living-web.global.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kadiryildiz283/living-web@main/dist/living-web.global.js"></script>
 ```
+
+#### C. Or clone and build locally:
+```bash
+git clone https://github.com/kadiryildiz283/living-web.git
+cd living-web
+npm install
+npm run build
+```
+
+> **Note:** Official NPM registry publication (`npm install living-web`) is scheduled for the upcoming public registry release.
 
 ---
 
