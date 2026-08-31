@@ -1,0 +1,31 @@
+{
+  "name": "@living-web/sdk",
+  "version": "1.0.0",
+  "description": "Turn any website into a living world with autonomous animated browser characters",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --emitDeclarationOnly && esbuild src/index.ts --bundle --outfile=dist/index.js --format=esm && esbuild src/index.ts --bundle --outfile=dist/living-web.bundle.js --format=esm && esbuild src/index.ts --bundle --outfile=dist/living-web.global.js --format=iife --global-name=LivingWeb",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "living-web",
+    "browser-pet",
+    "autonomous-agents",
+    "game-loop",
+    "physics",
+    "dom-scanner",
+    "animation"
+  ],
+  "author": "Google Deepmind / Living Web Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "happy-dom": "^17.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}

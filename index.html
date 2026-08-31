@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Living Web — Autonomous Browser Pet</title>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --accent: #ec4899;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 220vh;
+      overflow-x: hidden;
+    }
+
+    /* Top Navigation Platform */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #a855f7, #6366f1, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1100px;
+      margin: 2.5rem auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Hero Banner Platform */
+    .hero {
+      background: linear-gradient(135deg, #1e1b4b, #312e81);
+      border: 1px solid #4338ca;
+      border-radius: 1rem;
+      padding: 3.5rem 2rem;
+      margin-bottom: 2.5rem;
+      text-align: center;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      font-weight: 800;
+    }
+
+    .hero p {
+      color: #cbd5e1;
+      font-size: 1.15rem;
+      max-width: 700px;
+      margin: 0 auto 1.5rem;
+    }
+
+    /* Interactive Toy Attractor Platform */
+    .toy-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(236, 72, 153, 0.2);
+      border: 2px dashed #ec4899;
+      color: #f472b6;
+      padding: 0.75rem 1.5rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .toy-box:hover {
+      transform: scale(1.05);
+      background: rgba(236, 72, 153, 0.3);
+    }
+
+    /* Grid of Card Platforms */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.75rem;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--primary);
+    }
+
+    .card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+      color: #e2e8f0;
+    }
+
+    .card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .btn {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+    }
+
+    /* Staircase / Stepping Platforms */
+    .obstacle-course {
+      position: relative;
+      height: 320px;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      margin-bottom: 3rem;
+      overflow: hidden;
+      padding: 1rem;
+    }
+
+    .obstacle-title {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+    }
+
+    .step-1 {
+      position: absolute;
+      left: 60px;
+      bottom: 40px;
+      width: 150px;
+      height: 40px;
+      background: #10b981;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: white;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    .step-2 {
+      position: absolute;
+      left: 260px;
+      bottom: 110px;
+      width: 150px;
+      height: 40px;
+      background: #3b82f6;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: white;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    .step-3 {
+      position: absolute;
+      left: 460px;
+      bottom: 180px;
+      width: 170px;
+      height: 40px;
+      background: #8b5cf6;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: white;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    .step-4 {
+      position: absolute;
+      left: 680px;
+      bottom: 120px;
+      width: 180px;
+      height: 40px;
+      background: #f59e0b;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: white;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Fixed Floating Controller UI */
+    .controller-panel {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+      z-index: 1000000;
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .controller-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #38bdf8;
+    }
+
+    .controller-status {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 0.4rem 0.6rem;
+      border-radius: 0.4rem;
+    }
+
+    .btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    .btn-ctrl {
+      background: #334155;
+      color: white;
+      border: none;
+      padding: 0.5rem;
+      border-radius: 0.4rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .btn-ctrl:hover {
+      background: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .input-row {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .input-text {
+      flex: 1;
+      background: #1e293b;
+      border: 1px solid var(--border);
+      border-radius: 0.4rem;
+      color: white;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.85rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 4rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      background: #090d16;
+    }
+  </style>
+
+  <!-- Load Living Web Global Bundle with cache buster -->
+  <script src="/dist/living-web.global.js?v=2.0.0"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar (Platform) -->
+  <header data-living-platform id="top-navbar">
+    <div class="logo">
+      <span>🐾</span> Living Web
+    </div>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#playground">Playground</a>
+      <button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="sayFromCard('Üst butona tıkladın!')" data-living-platform>Tıkla</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero Section (Platform) -->
+    <section class="hero" data-living-platform id="hero-banner">
+      <h1>Turn Any Website Into a Living World</h1>
+      <p>
+        Zero-physics autonomous game characters living directly on your DOM.
+        The user defines the character; Living Web defines the world.
+      </p>
+      <div class="toy-box" data-living-attractor="squeaky-ball" id="toy-ball" onclick="petBark()">
+        <span>🎾</span> İnteraktif Top (Attractor Zone)
+      </div>
+    </section>
+
+    <!-- Platform Cards -->
+    <section id="features" class="grid">
+      <article class="card" data-living-platform id="card-1">
+        <h3>⚡ Zero-Physics DX</h3>
+        <p>No manual gravity, velocity, or collision detection loops. Just instantiate and let it roam.</p>
+        <button class="btn" onclick="sayFromCard('Sıfır fizik kodu ile harika deneyim!')" data-living-platform>DX İncele</button>
+      </article>
+
+      <article class="card" data-living-platform id="card-2">
+        <h3>🔍 Automatic DOM Discovery</h3>
+        <p>Smart element classifier turns headers, cards, buttons, and sections into physical surfaces.</p>
+        <button class="btn" onclick="sayFromCard('Tüm DOM platformları otomatik algılandı!')" data-living-platform>DOM İncele</button>
+      </article>
+
+      <article class="card" data-living-platform id="card-3">
+        <h3>🧠 Utility Behavior Engine</h3>
+        <p>Autonomous state machine driven by energy, curiosity, boredom, and user interactions.</p>
+        <button class="btn" onclick="sayFromCard('Hav hav! Yüksek enerjiyle geziyorum!')" data-living-platform>Etkileşim</button>
+      </article>
+    </section>
+
+    <!-- Obstacle Course Platforms -->
+    <section id="playground" class="obstacle-course" data-living-platform id="obstacle-section">
+      <div class="obstacle-title">Merdiven Parkuru (DOM Basamakları)</div>
+      <div class="step-1" data-living-platform id="step-1">Basamak 1</div>
+      <div class="step-2" data-living-platform id="step-2">Basamak 2</div>
+      <div class="step-3" data-living-platform id="step-3">Basamak 3 (Yüksek)</div>
+      <div class="step-4" data-living-platform id="step-4">Basamak 4 (İniş)</div>
+    </section>
+  </main>
+
+  <!-- Interactive Control Panel -->
+  <aside class="controller-panel" data-living-ignore>
+    <div class="controller-header">
+      <span>🐕 Pet Control Panel</span>
+      <span id="pet-state-badge" style="font-size: 0.75rem; background: #4f46e5; padding: 0.2rem 0.5rem; border-radius: 9999px;">IDLE</span>
+    </div>
+
+    <div class="controller-status">
+      <span>Zemin: <b id="grounded-status" style="color: #4ade80;">Evet</b></span>
+      <span>Enerji: <b id="energy-status" style="color: #facc15;">85%</b></span>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-ctrl" onclick="petBark()">Havla 🗣️</button>
+      <button class="btn-ctrl" onclick="petJump()">Zıpla 🦘</button>
+      <button class="btn-ctrl" onclick="petWalk()">Yürü 🚶</button>
+      <button class="btn-ctrl" onclick="petSleep()">Uyu 💤</button>
+      <button class="btn-ctrl" onclick="togglePause()" id="pause-btn">Duraklat ⏸️</button>
+      <button class="btn-ctrl" onclick="toggleDebug()" id="debug-btn">Debug Çizgileri 🔍</button>
+    </div>
+
+    <div class="input-row">
+      <input type="text" id="speech-input" class="input-text" placeholder="Bir şey söyle..." value="Merhaba! Beni fareyle tut sürükle!">
+      <button class="btn-ctrl" style="padding: 0 0.8rem;" onclick="petSpeak()">Konuş</button>
+    </div>
+  </aside>
+
+  <!-- Footer Platform -->
+  <footer data-living-platform id="page-footer">
+    <p>Living Web Runtime &copy; 2026. Built with precision and autonomous physics.</p>
+  </footer>
+
+  <!-- Pet Controller Script -->
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const SDK = window.LivingWeb;
+      if (!SDK) {
+        console.error("LivingWeb SDK global bundle not loaded!");
+        return;
+      }
+
+      // Initialize Living Web pet
+      const pet = SDK.createPet({
+        name: "Boncuk",
+        species: "dog",
+        assets: "/pets/boncuk/",
+        personality: {
+          energy: 0.9,
+          curiosity: 0.95,
+          friendliness: 1.0,
+          playfulness: 0.85
+        }
+      });
+
+      window.pet = pet;
+      pet.start();
+
+      // Teleport pet on top of Hero Banner
+      setTimeout(() => {
+        const heroEl = document.getElementById("hero-banner");
+        if (heroEl) {
+          const rect = heroEl.getBoundingClientRect();
+          pet.teleport(rect.left + rect.width / 2 - 25, rect.top + window.scrollY - 50);
+        }
+        pet.say("Hav hav! Hoş geldin!", 4500);
+      }, 200);
+
+      // Status UI monitor
+      setInterval(() => {
+        try {
+          const state = pet.getState();
+          const character = pet.getCharacter();
+          
+          const badge = document.getElementById("pet-state-badge");
+          if (badge) badge.innerText = state.action;
+
+          const groundedEl = document.getElementById("grounded-status");
+          if (groundedEl) {
+            groundedEl.innerText = state.grounded ? "Evet (Zeminde)" : "Havada (Uçuyor)";
+            groundedEl.style.color = state.grounded ? "#4ade80" : "#38bdf8";
+          }
+
+          const energyEl = document.getElementById("energy-status");
+          if (energyEl) {
+            const energyPct = Math.round(character.behavior.energy * 100);
+            energyEl.innerText = `${energyPct}%`;
+          }
+        } catch (e) {
+          // ignore
+        }
+      }, 150);
+
+      // Global control helpers
+      window.petBark = () => {
+        pet.bark();
+        pet.say("Hav hav! 🐶", 2500);
+      };
+
+      window.petJump = () => {
+        pet.jump();
+      };
+
+      window.petWalk = () => {
+        pet.walk();
+      };
+
+      window.petSleep = () => {
+        pet.sleep();
+        pet.say("Zzz... 😴", 3000);
+      };
+
+      window.petSpeak = () => {
+        const input = document.getElementById("speech-input");
+        if (input && input.value) {
+          pet.say(input.value, 4000);
+        }
+      };
+
+      window.sayFromCard = (text) => pet.say(text, 3500);
+
+      let isPaused = false;
+      window.togglePause = () => {
+        isPaused = !isPaused;
+        if (isPaused) {
+          pet.pause();
+          document.getElementById("pause-btn").innerText = "Devam Et ▶️";
+        } else {
+          pet.resume();
+          document.getElementById("pause-btn").innerText = "Duraklat ⏸️";
+        }
+      };
+
+      let isDebug = false;
+      window.toggleDebug = () => {
+        isDebug = !isDebug;
+        pet.getRuntime().config.debug = isDebug;
+        const btn = document.getElementById("debug-btn");
+        if (btn) btn.style.background = isDebug ? "#ec4899" : "#334155";
+      };
+    });
+  </script>
+</body>
+</html>
