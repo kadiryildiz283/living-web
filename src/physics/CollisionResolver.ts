@@ -28,24 +28,15 @@ export class CollisionResolver {
         // Lock vertically to surface top directly
         body.y = collision.surface.y - body.height;
         body.vy = 0;
-
-        // Auto-center / snap inward safely onto the platform if landing on outer edge
-        const minSafeX = collision.surface.x + 4;
-        const maxSafeX = Math.max(minSafeX, collision.surface.x + collision.surface.width - body.width - 4);
-        if (body.x < minSafeX) {
-          body.x = minSafeX;
-        } else if (body.x > maxSafeX) {
-          body.x = maxSafeX;
-        }
       } else if (collision.type === CollisionType.WALL) {
         hitWall = true;
         if (collision.normal.x < 0) {
           // Hit left wall while moving right
-          body.x = collision.surface.x - body.width;
+          body.x -= collision.penetration;
           body.vx = 0;
         } else if (collision.normal.x > 0) {
           // Hit right wall while moving left
-          body.x = collision.surface.x + collision.surface.width;
+          body.x += collision.penetration;
           body.vx = 0;
         }
       }

@@ -20,7 +20,7 @@ export class CollisionDetector {
       height: body.height
     };
 
-    const nearby = world.getNearbySurfaces(bodyRect, 35);
+    const nearby = world.getNearbySurfaces(bodyRect, 40);
     const bodyBottom = body.y + body.height;
 
     let bestFloorSurface: WorldSurface | null = null;
@@ -31,46 +31,47 @@ export class CollisionDetector {
         continue;
       }
 
+      // Explicit walls take precedence for lateral blocking
+      if (surface.type === SurfaceType.WALL) {
+        const verticalOverlap =
+          bodyBottom > surface.y + 4 &&
+          body.y < surface.y + surface.height - 4;
+
+        if (verticalOverlap) {
+          if (body.x + body.width >= surface.x && body.x < surface.x && body.vx > 0) {
+            collisions.push({
+              type: CollisionType.WALL,
+              surface,
+              normal: { x: -1, y: 0 },
+              penetration: Math.min(16, body.x + body.width - surface.x)
+            });
+          } else if (body.x <= surface.x + surface.width && body.x + body.width > surface.x + surface.width && body.vx < 0) {
+            collisions.push({
+              type: CollisionType.WALL,
+              surface,
+              normal: { x: 1, y: 0 },
+              penetration: Math.min(16, surface.x + surface.width - body.x)
+            });
+          }
+        }
+        continue;
+      }
+
+      // Floor / Platform Landing Check
+      // Standard DOM elements act as one-way top landing surfaces
       const horizontalOverlap =
         body.x + body.width > surface.x + padding &&
         body.x < surface.x + surface.width - padding;
 
-      // 1. Check Floor Landing (Only consider downward movement or landing threshold)
       if (horizontalOverlap) {
         const surfaceTop = surface.y;
         // Landing window: near top lip and moving down or level
-        if (bodyBottom >= surfaceTop - 6 && bodyBottom <= surfaceTop + 22 && body.vy >= -60) {
+        if (bodyBottom >= surfaceTop - 6 && bodyBottom <= surfaceTop + 24 && body.vy >= -60) {
           const dist = Math.abs(bodyBottom - surfaceTop);
           if (dist < minFloorDistance) {
             minFloorDistance = dist;
             bestFloorSurface = surface;
           }
-        }
-      }
-
-      // 2. Check Wall Collisions (Only when deeply inside the side of a tall wall, never on top lip)
-      const deeplyInsideVerticalBody =
-        bodyBottom > surface.y + 22 &&
-        body.y < surface.y + surface.height - 4;
-
-      if (deeplyInsideVerticalBody && body.vy >= 0) {
-        // Moving right into left wall of surface
-        if (body.x + body.width >= surface.x && body.x < surface.x + 8 && body.vx > 0) {
-          collisions.push({
-            type: CollisionType.WALL,
-            surface,
-            normal: { x: -1, y: 0 },
-            penetration: body.x + body.width - surface.x
-          });
-        }
-        // Moving left into right wall of surface
-        else if (body.x <= surface.x + surface.width && body.x + body.width > surface.x + surface.width - 8 && body.vx < 0) {
-          collisions.push({
-            type: CollisionType.WALL,
-            surface,
-            normal: { x: 1, y: 0 },
-            penetration: surface.x + surface.width - body.x
-          });
         }
       }
     }

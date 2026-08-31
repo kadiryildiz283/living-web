@@ -73,7 +73,7 @@ export class PhysicsEngine {
       // Enforce strict world boundaries (prevent escaping above .html or below document)
       this.clampToBounds(character, world);
 
-      // Recovery check if fallen outside
+      // Recovery check for NaN
       this.checkTrappedRecovery(character, world);
 
       return result;
@@ -92,12 +92,7 @@ export class PhysicsEngine {
   }
 
   private checkTrappedRecovery(character: CharacterState, world: WorldModel): void {
-    if (
-      isNaN(character.x) ||
-      isNaN(character.y) ||
-      character.y > world.bounds.maxY + 200 ||
-      character.y < world.bounds.minY - 200
-    ) {
+    if (isNaN(character.x) || isNaN(character.y)) {
       const safe = world.findSafeSpawn(character.width, character.height);
       character.x = safe.x;
       character.y = safe.y;
