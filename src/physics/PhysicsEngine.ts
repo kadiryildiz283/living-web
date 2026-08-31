@@ -47,7 +47,6 @@ export class PhysicsEngine {
 
     // 2. Continuous Ground Check to prevent gravity jitter when standing on platform
     if (character.grounded && character.vy >= 0) {
-      // Find current platform directly beneath character feet
       const footX = character.x + character.width / 2;
       const footY = character.y + character.height;
       const ground = world.getGroundBelow(footX, footY - 4, 10);
@@ -71,7 +70,7 @@ export class PhysicsEngine {
       // Resolve landing collisions
       const result = this.resolveCollisions(character, world);
 
-      // Clamp horizontal bounds
+      // Enforce strict world boundaries (prevent escaping above .html or below document)
       this.clampToBounds(character, world);
 
       // Recovery check if fallen outside
@@ -80,7 +79,7 @@ export class PhysicsEngine {
       return result;
     }
 
-    // Clamp horizontal bounds
+    // Enforce strict world boundaries
     this.clampToBounds(character, world);
 
     return {
@@ -109,8 +108,9 @@ export class PhysicsEngine {
   }
 
   private clampToBounds(character: CharacterState, world: WorldModel): void {
-    const minX = world.bounds.minX;
-    const maxX = world.bounds.maxX - character.width;
+    // 1. Strict Horizontal Boundaries
+    const minX = Math.max(0, world.bounds.minX);
+    const maxX = Math.max(minX + 50, world.bounds.maxX - character.width);
 
     if (character.x < minX) {
       character.x = minX;
@@ -118,6 +118,23 @@ export class PhysicsEngine {
     } else if (character.x > maxX) {
       character.x = maxX;
       if (character.vx > 0) character.vx = 0;
+    }
+
+    // 2. Strict Top Ceiling (NEVER allow escaping above HTML / window top edge)
+    const minY = 0;
+    if (character.y < minY) {
+      character.y = minY;
+      if (character.vy < 0) {
+        character.vy = 0; // Bonk ceiling and fall back down
+      }
+    }
+
+    // 3. Strict Bottom Floor (Never allow falling below HTML document bottom)
+    const maxY = Math.max(100, world.bounds.maxY - character.height);
+    if (character.y > maxY) {
+      character.y = maxY;
+      character.vy = 0;
+      character.grounded = true;
     }
   }
 }

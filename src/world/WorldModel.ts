@@ -153,7 +153,7 @@ export class WorldModel {
 
   findSafeSpawn(characterWidth: number = 40, characterHeight: number = 40): Vector2 {
     const candidates = this.surfaces
-      .filter((s) => s.type === SurfaceType.PLATFORM && s.width >= characterWidth)
+      .filter((s) => s.type === SurfaceType.PLATFORM && s.width >= characterWidth && s.y >= characterHeight + 15)
       .sort((a, b) => b.priority - a.priority || a.y - b.y);
 
     if (candidates.length > 0) {
