@@ -1,7 +1,14 @@
 import { Rect, Vector2 } from "../types/state";
-import { SurfaceType } from "../types/enums";
+import { Direction, SurfaceType } from "../types/enums";
 import { InteractionZone, WorldBounds, WorldSurface } from "../types/world";
-import { rectIntersects } from "../utils/math";
+import { distance, rectIntersects } from "../utils/math";
+
+export interface ObstacleAhead {
+  surface: WorldSurface;
+  heightDiff: number; // positive = step is higher than feet
+  gap: number;        // horizontal distance to start of surface
+  type: "step_up" | "step_down" | "gap" | "wall";
+}
 
 export class WorldModel {
   public bounds: WorldBounds = { minX: 0, minY: 0, maxX: 1280, maxY: 800 };
@@ -59,8 +66,92 @@ export class WorldModel {
     return closestSurface;
   }
 
+  /**
+   * Looks ahead in the character's movement direction to detect stairs, obstacles, or platforms to jump onto
+   */
+  findObstacleAhead(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    direction: Direction,
+    lookaheadDistance: number = 90
+  ): ObstacleAhead | null {
+    const footY = y + height;
+    const isRight = direction === Direction.RIGHT;
+
+    // Filter surfaces that lie ahead in the movement direction
+    for (const surface of this.surfaces) {
+      if (surface.type === SurfaceType.IGNORE || surface.type === SurfaceType.HAZARD) {
+        continue;
+      }
+
+      // Skip current floor under feet
+      if (Math.abs(surface.y - footY) < 4 && x >= surface.x - 5 && x + width <= surface.x + surface.width + 5) {
+        continue;
+      }
+
+      const gap = isRight ? surface.x - (x + width) : x - (surface.x + surface.width);
+      const heightDiff = footY - surface.y; // Positive if surface is higher than feet
+
+      // Surface is ahead within lookahead range
+      if (gap >= -15 && gap <= lookaheadDistance) {
+        // Step Up (Stairs / Obstacle ahead)
+        if (heightDiff > 8 && heightDiff <= 140) {
+          return {
+            surface,
+            heightDiff,
+            gap: Math.max(0, gap),
+            type: "step_up"
+          };
+        }
+        // Jumpable Gap to platform
+        if (Math.abs(heightDiff) <= 40 && gap > 15 && gap <= lookaheadDistance) {
+          return {
+            surface,
+            heightDiff,
+            gap,
+            type: "gap"
+          };
+        }
+        // High Wall (Cannot jump directly)
+        if (heightDiff > 140) {
+          return {
+            surface,
+            heightDiff,
+            gap: Math.max(0, gap),
+            type: "wall"
+          };
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Finds nearest attractor zone within range
+   */
+  findNearbyAttractor(x: number, y: number, maxDist: number = 500): InteractionZone | null {
+    let closestZone: InteractionZone | null = null;
+    let minDist = maxDist;
+
+    for (const zone of this.zones) {
+      const zoneCenter = {
+        x: zone.bounds.x + zone.bounds.width / 2,
+        y: zone.bounds.y + zone.bounds.height / 2
+      };
+      const dist = distance({ x, y }, zoneCenter);
+      if (dist < minDist) {
+        minDist = dist;
+        closestZone = zone;
+      }
+    }
+
+    return closestZone;
+  }
+
   findSafeSpawn(characterWidth: number = 40, characterHeight: number = 40): Vector2 {
-    // 1. Check if there are valid surfaces with high priority or platforms
     const candidates = this.surfaces
       .filter((s) => s.type === SurfaceType.PLATFORM && s.width >= characterWidth)
       .sort((a, b) => b.priority - a.priority || a.y - b.y);
@@ -73,7 +164,6 @@ export class WorldModel {
       };
     }
 
-    // 2. Fallback to bottom of world bounds or default ground
     const groundY = Math.max(100, this.bounds.maxY - characterHeight - 20);
     return {
       x: Math.max(50, this.bounds.minX + 100),

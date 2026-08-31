@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Living Web — Autonomous Browser Pet Demo</title>
   <style>
     :root {
@@ -27,7 +30,7 @@
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.6;
-      min-height: 200vh; /* Long page to demonstrate world scrolling & physics */
+      min-height: 220vh;
       overflow-x: hidden;
     }
 
@@ -36,7 +39,7 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(15, 23, 42, 0.92);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       padding: 1rem 2rem;
@@ -75,7 +78,7 @@
     /* Main Container */
     main {
       max-width: 1100px;
-      margin: 2rem auto;
+      margin: 2.5rem auto;
       padding: 0 1.5rem;
     }
 
@@ -194,39 +197,39 @@
     .step-1 {
       position: absolute;
       left: 60px;
-      bottom: 40px;
-      width: 150px;
+      top: 240px;
+      width: 160px;
       height: 40px;
       background: #10b981;
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 600;
+      font-weight: 700;
       color: white;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
     }
 
     .step-2 {
       position: absolute;
-      left: 260px;
-      bottom: 110px;
-      width: 150px;
+      left: 270px;
+      top: 170px;
+      width: 160px;
       height: 40px;
       background: #3b82f6;
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 600;
+      font-weight: 700;
       color: white;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
     }
 
     .step-3 {
       position: absolute;
-      left: 460px;
-      bottom: 180px;
+      left: 480px;
+      top: 100px;
       width: 170px;
       height: 40px;
       background: #8b5cf6;
@@ -234,15 +237,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 600;
+      font-weight: 700;
       color: white;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
     }
 
     .step-4 {
       position: absolute;
-      left: 680px;
-      bottom: 120px;
+      left: 700px;
+      top: 160px;
       width: 180px;
       height: 40px;
       background: #f59e0b;
@@ -250,7 +253,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 600;
+      font-weight: 700;
       color: white;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
     }
@@ -340,8 +343,8 @@
     }
   </style>
 
-  <!-- Load Living Web Global Bundle -->
-  <script src="../dist/living-web.global.js"></script>
+  <!-- Load Living Web Global Bundle with cache buster -->
+  <script src="/dist/living-web.global.js?v=2.5.0"></script>
 </head>
 <body>
 
@@ -353,7 +356,7 @@
     <nav class="nav-links">
       <a href="#features">Features</a>
       <a href="#playground">Playground</a>
-      <button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="sayFromCard('I clicked the top button!')" data-living-platform>Click Me</button>
+      <button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="sayFromCard('Üst butona tıkladın!')" data-living-platform>Tıkla</button>
     </nav>
   </header>
 
@@ -366,7 +369,7 @@
         The user defines the character; Living Web defines the world.
       </p>
       <div class="toy-box" data-living-attractor="squeaky-ball" id="toy-ball" onclick="petBark()">
-        <span>🎾</span> Interactive Ball (Attractor Zone)
+        <span>🎾</span> İnteraktif Top (Attractor Zone)
       </div>
     </section>
 
@@ -375,29 +378,29 @@
       <article class="card" data-living-platform id="card-1">
         <h3>⚡ Zero-Physics DX</h3>
         <p>No manual gravity, velocity, or collision detection loops. Just instantiate and let it roam.</p>
-        <button class="btn" onclick="sayFromCard('I love this zero-physics DX!')" data-living-platform>Explore DX</button>
+        <button class="btn" onclick="sayFromCard('Sıfır fizik kodu ile harika deneyim!')" data-living-platform>DX İncele</button>
       </article>
 
       <article class="card" data-living-platform id="card-2">
         <h3>🔍 Automatic DOM Discovery</h3>
         <p>Smart element classifier turns headers, cards, buttons, and sections into physical surfaces.</p>
-        <button class="btn" onclick="sayFromCard('Look at all these DOM platforms!')" data-living-platform>Explore DOM</button>
+        <button class="btn" onclick="sayFromCard('Tüm DOM platformları otomatik algılandı!')" data-living-platform>DOM İncele</button>
       </article>
 
       <article class="card" data-living-platform id="card-3">
         <h3>🧠 Utility Behavior Engine</h3>
         <p>Autonomous state machine driven by energy, curiosity, boredom, and user interactions.</p>
-        <button class="btn" onclick="sayFromCard('Bark bark! High energy!')" data-living-platform>Interact</button>
+        <button class="btn" onclick="sayFromCard('Hav hav! Yüksek enerjiyle geziyorum!')" data-living-platform>Etkileşim</button>
       </article>
     </section>
 
     <!-- Obstacle Course Platforms -->
     <section id="playground" class="obstacle-course" data-living-platform id="obstacle-section">
-      <div class="obstacle-title">Staircase Obstacle Course (DOM Platforms)</div>
-      <div class="step-1" data-living-platform id="step-1">Step 1</div>
-      <div class="step-2" data-living-platform id="step-2">Step 2</div>
-      <div class="step-3" data-living-platform id="step-3">Step 3 (High)</div>
-      <div class="step-4" data-living-platform id="step-4">Step 4 (Slide)</div>
+      <div class="obstacle-title">Merdiven Parkuru (DOM Basamakları)</div>
+      <div class="step-1" data-living-platform id="step-1">Basamak 1 🟢</div>
+      <div class="step-2" data-living-platform id="step-2">Basamak 2 🔵</div>
+      <div class="step-3" data-living-platform id="step-3">Zirve Basamağı 🟣</div>
+      <div class="step-4" data-living-platform id="step-4">İniş Basamağı 🟠</div>
     </section>
   </main>
 
@@ -414,6 +417,8 @@
     </div>
 
     <div class="btn-group">
+      <button class="btn-ctrl" onclick="petClimbStairs()">Parkur Tırman 🧗</button>
+      <button class="btn-ctrl" onclick="petFetchBall()">Topu Yakala 🎾</button>
       <button class="btn-ctrl" onclick="petBark()">Havla 🗣️</button>
       <button class="btn-ctrl" onclick="petJump()">Zıpla 🦘</button>
       <button class="btn-ctrl" onclick="petWalk()">Yürü 🚶</button>
@@ -448,24 +453,24 @@
         species: "dog",
         assets: "/pets/boncuk/",
         personality: {
-          energy: 0.9,
-          curiosity: 0.95,
+          energy: 0.95,
+          curiosity: 0.98,
           friendliness: 1.0,
-          playfulness: 0.85
+          playfulness: 0.9
         }
       });
 
       window.pet = pet;
       pet.start();
 
-      // Teleport pet on top of Hero Banner
+      // Initial Spawn on Hero Banner
       setTimeout(() => {
         const heroEl = document.getElementById("hero-banner");
         if (heroEl) {
           const rect = heroEl.getBoundingClientRect();
           pet.teleport(rect.left + rect.width / 2 - 25, rect.top + window.scrollY - 50);
         }
-        pet.say("Hav hav! Hoş geldin!", 4000);
+        pet.say("Hav hav! Akıllı parkur tırmanıcısıyım!", 4000);
       }, 200);
 
       // Status UI monitor
@@ -494,6 +499,28 @@
       }, 150);
 
       // Global control helpers
+      window.petClimbStairs = () => {
+        const step1 = document.getElementById("step-1");
+        if (step1) {
+          const rect = step1.getBoundingClientRect();
+          pet.teleport(rect.left + 20, rect.top + window.scrollY - 60);
+          pet.setDirection(SDK.Direction.RIGHT);
+          pet.walk();
+          pet.say("Merdivenleri tırmanıyorum! 🧗", 3500);
+        }
+      };
+
+      window.petFetchBall = () => {
+        const ball = document.getElementById("toy-ball");
+        if (ball) {
+          const rect = ball.getBoundingClientRect();
+          pet.teleport(rect.left - 100, rect.top + window.scrollY - 50);
+          pet.setDirection(SDK.Direction.RIGHT);
+          pet.run();
+          pet.say("Topu yakalamaya koşuyorum! 🎾", 3000);
+        }
+      };
+
       window.petBark = () => {
         pet.bark();
         pet.say("Hav hav! 🐶", 2500);

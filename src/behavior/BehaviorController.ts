@@ -81,17 +81,25 @@ export class BehaviorController {
     context.boredom = this.boredom;
     context.novelty = this.novelty;
 
+    // 2. Check if state flagged obstacle jump
+    if ((context as any)._jumpedForObstacle) {
+      (context as any)._jumpedForObstacle = false;
+      this.stateMachine.transition(ActionState.JUMP, context, true);
+      this.notifyActionChange(ActionState.JUMP);
+      return;
+    }
+
     // 3. Fall state handling: if character is falling and not in JUMP or CLIMB state, transition to FALL
-    if (!context.character.grounded && context.character.vy > 50 && current.name !== ActionState.JUMP && current.name !== ActionState.FALL) {
+    if (!context.character.grounded && context.character.vy > 60 && current.name !== ActionState.JUMP && current.name !== ActionState.FALL) {
       this.stateMachine.transition(ActionState.FALL, context, true);
       this.notifyActionChange(ActionState.FALL);
       return;
     }
 
-    // 4. Landed state handling: if character was falling and is now grounded, switch to IDLE
-    if (context.character.grounded && current.name === ActionState.FALL) {
-      this.stateMachine.transition(ActionState.IDLE, context, true);
-      this.notifyActionChange(ActionState.IDLE);
+    // 4. Landed state handling: if character was falling or jumping and is now grounded, continue walking or idle
+    if (context.character.grounded && (current.name === ActionState.FALL || (current.name === ActionState.JUMP && current.getElapsed() > 250))) {
+      this.stateMachine.transition(ActionState.WALK, context, true);
+      this.notifyActionChange(ActionState.WALK);
       return;
     }
 
