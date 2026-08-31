@@ -48,7 +48,7 @@ export class LivingWebSDK {
 
     runtime.addCharacter(character);
 
-    return new PetController(runtime, character);
+    return new PetController(runtime, character, config.skills);
   }
 
   /**
@@ -89,7 +89,7 @@ export class LivingWebSDK {
 
     runtime.addCharacter(character);
 
-    return new PetController(runtime, character);
+    return new PetController(runtime, character, config.skills);
   }
 
   /**

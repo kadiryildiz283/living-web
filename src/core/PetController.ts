@@ -1,15 +1,22 @@
 import { ActionState, Direction } from "../types/enums";
 import { CharacterState } from "../types/state";
+import { CharacterSkill, CharacterSkillContext } from "../types/behavior";
 import { Character } from "./Character";
 import { LivingRuntime } from "./LivingRuntime";
 
 export class PetController {
   private runtime: LivingRuntime;
   private character: Character;
+  private skills: Map<string, CharacterSkill> = new Map();
+  private skillCooldowns: Map<string, number> = new Map();
 
-  constructor(runtime: LivingRuntime, character: Character) {
+  constructor(runtime: LivingRuntime, character: Character, initialSkills: CharacterSkill[] = []) {
     this.runtime = runtime;
     this.character = character;
+
+    for (const skill of initialSkills) {
+      this.registerSkill(skill);
+    }
   }
 
   start(container?: HTMLElement | null): this {
@@ -94,6 +101,64 @@ export class PetController {
     this.character.state.vx = 0;
     this.character.state.vy = 0;
     return this;
+  }
+
+  /**
+   * Register a custom skill for this character
+   */
+  registerSkill(skill: CharacterSkill): this {
+    this.skills.set(skill.name, skill);
+    return this;
+  }
+
+  /**
+   * Execute a custom skill by name
+   */
+  async useSkill(name: string, ...args: any[]): Promise<boolean> {
+    const skill = this.skills.get(name);
+    if (!skill) {
+      console.warn(`Skill "${name}" not registered on character ${this.character.state.name}`);
+      return false;
+    }
+
+    const now = Date.now();
+    const lastUsed = this.skillCooldowns.get(name) || 0;
+    const cooldown = skill.cooldownMs || 0;
+
+    if (now - lastUsed < cooldown) {
+      console.warn(`Skill "${name}" is on cooldown (${Math.ceil((cooldown - (now - lastUsed)) / 1000)}s remaining)`);
+      return false;
+    }
+
+    this.skillCooldowns.set(name, now);
+
+    const context: CharacterSkillContext = {
+      character: this.character.state,
+      world: this.runtime.world,
+      say: (t, d) => this.say(t, d),
+      teleport: (x, y) => this.teleport(x, y),
+      jump: () => this.jump(),
+      bark: () => this.bark(),
+      walk: () => this.walk(),
+      sleep: () => this.sleep(),
+      do: (a) => this.do(a)
+    };
+
+    try {
+      await skill.execute(context, ...args);
+      this.runtime.events.emit("skill:executed", {
+        characterId: this.character.state.id,
+        skillName: name
+      });
+      return true;
+    } catch (err) {
+      console.error(`Error executing skill "${name}":`, err);
+      return false;
+    }
+  }
+
+  getSkills(): CharacterSkill[] {
+    return Array.from(this.skills.values());
   }
 
   getState(): CharacterState {

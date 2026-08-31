@@ -1,5 +1,5 @@
 import { ActionState } from "./enums";
-import { CharacterState, Personality } from "./state";
+import { CharacterState, Personality, Vector2 } from "./state";
 import { WorldModel } from "../world/WorldModel";
 import { InteractionSnapshot } from "./events";
 import { RecentActionLog } from "../behavior/RecentActionLog";
@@ -42,4 +42,24 @@ export interface BehaviorContext {
   energy: number;
   boredom: number;
   novelty: number;
+}
+
+export interface CharacterSkillContext {
+  character: CharacterState;
+  world: WorldModel;
+  target?: Element | Vector2 | null;
+  say: (text: string, durationMs?: number) => void;
+  teleport: (x: number, y: number) => void;
+  jump: () => boolean;
+  bark: () => boolean;
+  walk: () => boolean;
+  sleep: () => boolean;
+  do: (action: string) => boolean;
+}
+
+export interface CharacterSkill {
+  name: string;
+  description?: string;
+  cooldownMs?: number;
+  execute: (context: CharacterSkillContext, ...args: any[]) => void | Promise<void>;
 }

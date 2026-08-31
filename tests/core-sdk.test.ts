@@ -93,6 +93,35 @@ describe("LivingRuntime & PetController & SDK", () => {
     expect(pet.getRuntime().characters.size).toBe(0);
   });
 
+  it("supports custom skills registration and execution", async () => {
+    let skillExecuted = false;
+
+    const pet = createPet({
+      name: "NinjaDog",
+      species: "dog",
+      assets: "/pets/ninja/",
+      skills: [
+        {
+          name: "backflip",
+          description: "Performs an agile backflip with bark",
+          cooldownMs: 1000,
+          execute: (ctx) => {
+            skillExecuted = true;
+            ctx.say("Ninja Taklası! 🦹", 2000);
+            ctx.jump();
+          }
+        }
+      ]
+    });
+
+    expect(pet.getSkills().length).toBe(1);
+    expect(pet.getSkills()[0].name).toBe("backflip");
+
+    const success = await pet.useSkill("backflip");
+    expect(success).toBe(true);
+    expect(skillExecuted).toBe(true);
+  });
+
   it("async factory livingPet preloads and sets up pet", async () => {
     const pet = await livingPet({
       name: "Pamuk",

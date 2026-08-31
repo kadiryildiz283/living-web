@@ -1,5 +1,6 @@
 import { AssetSource } from "./animation";
 import { Personality } from "./state";
+import { CharacterSkill } from "./behavior";
 
 export interface PersonalityConfig {
   energy?: number;
@@ -59,6 +60,7 @@ export interface PetConfig {
   behavior?: BehaviorConfig;
   interactions?: InteractionConfig;
   physics?: PhysicsConfig;
+  skills?: CharacterSkill[];
   customCanvas?: HTMLCanvasElement;
   rootElement?: HTMLElement | Element;
 }

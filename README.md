@@ -7,7 +7,7 @@
 [![CI Status](https://img.shields.io/badge/CI-Passing-brightgreen.svg)](https://github.com/kadiryildiz283/live-pet/actions)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Vitest](https://img.shields.io/badge/Tests-45%20Passed-22c55e.svg?logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Vitest](https://img.shields.io/badge/Tests-46%20Passed-22c55e.svg?logo=vitest&logoColor=white)](https://vitest.dev/)
 [![Zero-Dependency Runtime](https://img.shields.io/badge/Runtime%20Dependencies-0-success.svg)](#)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
@@ -26,21 +26,22 @@
 
 ## 🌟 What is Living Web?
 
-**Living Web** is an open-source browser runtime that places user-defined animated characters inside ordinary HTML pages and makes them behave like autonomous, physics-aware game agents.
+**Living Web** is an open-source browser runtime that places user-defined animated characters (dogs, cats, dragons, anime avatars, custom sprites) inside ordinary HTML pages and makes them behave like autonomous, physics-aware game agents.
 
-You don't need to implement game loops, gravity, collision detection, sprite timing, or scroll mapping. The runtime scans your DOM geometry, converts headers, cards, and buttons into physical platforms, and runs simulation and utility-driven behavior automatically.
+You don't need to implement game loops, gravity, collision detection, sprite timing, or scroll mapping. The runtime automatically scans your DOM geometry, converts headers, cards, and buttons into physical platforms, and runs continuous simulation and utility-driven behavior.
 
 ---
 
-## ✨ Features
+## ✨ Key Features
 
 - ⚡ **Zero-Physics Developer Experience**: No manual gravity equations, coordinate tracking, or collision loops.
+- 🎨 **Bring Any Character (Custom Sprites & Manifests)**: Easily plug in custom sprite sheets, PNG sequences, or pixel art.
+- 🧙‍♂️ **Custom Skill & Ability Engine**: Register infinite custom skills (spells, dances, acrobatic flips, feeding, page inspection).
 - 🔍 **Automatic World Discovery**: Automatically turns semantic HTML (`header`, `main`, `section`, `button`, `.card`, etc.) into physical platforms with debounced `MutationObserver` & `ResizeObserver` tracking.
-- 🧠 **Personality-Driven Utility AI**: Local finite-state machine (`IDLE`, `WALK`, `RUN`, `JUMP`, `FALL`, `CLIMB`, `BARK`, `SLEEP`, `OBSERVE`, `INTERACT`) driven by energy, curiosity, friendliness, and boredom.
-- 🎯 **Declarative HTML Hints**: Customize the world with simple HTML attributes (`data-living-platform`, `data-living-attractor`, `data-living-ignore`).
-- 🎨 **High-DPI Canvas Overlay**: Smooth 60 FPS hardware-accelerated rendering with procedural pixel graphics, sprite asset support, and XSS-sanitized speech bubbles.
+- 🧠 **Spatial Awareness & Utility AI**: Obstacle detection, smart stair climbing, energy depletion, boredom, curiosity, and sleep cycles.
+- 🎯 **Declarative HTML Hints**: Guide character interactions via HTML markup (`data-living-platform`, `data-living-attractor`, `data-living-ignore`).
 - 🖱️ **Interactive Signals**: Pointer hover, drag-and-drop, clicks, and page scroll synchronization.
-- 🔒 **Privacy & Offline First**: 100% browser-authoritative real-time simulation; cloud AI is optional and low-frequency.
+- 🔒 **Zero-Dependency & Offline First**: 100% browser-authoritative real-time simulation; cloud AI is optional.
 
 ---
 
@@ -52,7 +53,7 @@ You don't need to implement game loops, gravity, collision detection, sprite tim
 npm install @living-web/sdk
 ```
 
-Or load via script tag:
+Or load via standalone CDN / `<script>` tag:
 
 ```html
 <script src="dist/living-web.global.js"></script>
@@ -60,7 +61,7 @@ Or load via script tag:
 
 ---
 
-### 2. Basic Usage (Vanilla JavaScript / TypeScript)
+### 2. Basic Usage
 
 ```typescript
 import { livingPet } from "@living-web/sdk";
@@ -89,6 +90,165 @@ dog.jump();
 
 ---
 
+## 🎨 Adding Your Own Custom Characters
+
+Living Web is completely character-agnostic. You can bring **any character or creature** (cats, dragons, robots, monsters, anime heroes) simply by providing a sprite folder or an `AssetManifest`:
+
+### Option A: Folder with Standard Frame Names
+
+If you host a directory with standard PNG frames:
+```text
+/assets/dragon/
+  ├── idle_0.png, idle_1.png
+  ├── walk_0.png, walk_1.png, walk_2.png
+  ├── jump_0.png, jump_1.png
+  ├── sleep_0.png
+  └── manifest.json (optional)
+```
+
+```typescript
+const dragon = await livingPet({
+  name: "Ignis",
+  species: "dragon",
+  assets: "/assets/dragon/",
+  physics: {
+    gravity: 500,       // Floats gracefully
+    walkSpeed: 110,
+    jumpImpulse: 400
+  }
+});
+dragon.start();
+```
+
+### Option B: Explicit Asset Manifest (Sprite Sheets & Web Images)
+
+```typescript
+import { livingPet } from "@living-web/sdk";
+
+const cat = await livingPet({
+  name: "Pamuk",
+  species: "cat",
+  assets: {
+    animations: {
+      IDLE: {
+        name: "IDLE",
+        frames: ["/sprites/cat/idle-1.png", "/sprites/cat/idle-2.png"],
+        fps: 4,
+        loop: true,
+        frameDurationMs: 250
+      },
+      WALK: {
+        name: "WALK",
+        frames: ["/sprites/cat/walk-1.png", "/sprites/cat/walk-2.png", "/sprites/cat/walk-3.png"],
+        fps: 8,
+        loop: true,
+        frameDurationMs: 125
+      },
+      JUMP: {
+        name: "JUMP",
+        frames: ["/sprites/cat/jump.png"],
+        fps: 6,
+        loop: false,
+        frameDurationMs: 160
+      },
+      SLEEP: {
+        name: "SLEEP",
+        frames: ["/sprites/cat/sleep.png"],
+        fps: 2,
+        loop: true,
+        frameDurationMs: 500
+      }
+    }
+  }
+});
+```
+
+---
+
+## 🧙‍♂️ Defining Custom Skills & Abilities
+
+You can empower your characters with **unlimited custom skills**, cooldowns, acrobatic moves, interactive spells, and DOM manipulations:
+
+```typescript
+import { livingPet } from "@living-web/sdk";
+
+const ninjaPet = await livingPet({
+  name: "Kuro",
+  species: "ninja-dog",
+  assets: "/pets/kuro/",
+  skills: [
+    // 1. Acrobatic Backflip Skill
+    {
+      name: "backflip",
+      description: "Performs an agile high backflip leap",
+      cooldownMs: 2000,
+      execute: (ctx) => {
+        ctx.say("Ninja Taklası! 🦹✨", 2500);
+        ctx.character.vy = -450;
+        ctx.character.vx = ctx.character.direction === 1 ? 180 : -180;
+        ctx.character.grounded = false;
+      }
+    },
+
+    // 2. Dance Routine Skill
+    {
+      name: "dance",
+      description: "Cute wiggle dance with music",
+      cooldownMs: 4000,
+      execute: async (ctx) => {
+        ctx.say("La la la! 💃🎵 Dans zamanı!", 3000);
+        for (let i = 0; i < 4; i++) {
+          ctx.character.direction = ctx.character.direction === 1 ? -1 : 1;
+          ctx.jump();
+          await new Promise((r) => setTimeout(r, 350));
+        }
+      }
+    },
+
+    // 3. Feed & Energy Recovery Skill
+    {
+      name: "feed",
+      description: "Feed pet a delicious snack",
+      cooldownMs: 2000,
+      execute: (ctx) => {
+        ctx.character.behavior.energy = 1.0;
+        ctx.say("Ham ham! Lezzetli mama! 🍖😋 Enerjim %100!", 3500);
+        ctx.bark();
+      }
+    },
+
+    // 4. Intelligent DOM Inspector Skill
+    {
+      name: "inspectPage",
+      description: "Counts and analyzes visible physical platforms",
+      cooldownMs: 3000,
+      execute: (ctx) => {
+        const platformCount = ctx.world.surfaces.length;
+        ctx.say(`Bu sayfada tam ${platformCount} adet fizik platformu keşfettim! 🔍🐾`, 4000);
+      }
+    }
+  ]
+});
+
+// Trigger skills dynamically anytime
+ninjaPet.useSkill("backflip");
+ninjaPet.useSkill("dance");
+ninjaPet.useSkill("feed");
+ninjaPet.useSkill("inspectPage");
+
+// Register new skills on the fly
+ninjaPet.registerSkill({
+  name: "lightningDash",
+  cooldownMs: 5000,
+  execute: (ctx) => {
+    ctx.say("Şimşek Hızı! ⚡⚡", 2000);
+    ctx.character.vx = 350;
+  }
+});
+```
+
+---
+
 ## 🏷️ Declarative HTML Hints
 
 You can guide the character's world interactions directly in your HTML markup:
@@ -99,7 +259,7 @@ You can guide the character's world interactions directly in your HTML markup:
   Solid Platform
 </div>
 
-<!-- Attractor Zone: Pet will be drawn here to play -->
+<!-- Attractor Zone: Pet will naturally be drawn here to play -->
 <div class="toy-area" data-living-attractor="squeaky-ball">
   🎾 Toy Box
 </div>
@@ -126,8 +286,8 @@ Host Webpage (DOM)
 │  └───────────────┘     └──────────────┘     └────┬───┘  │
 │                                                  │      │
 │  ┌───────────────┐     ┌──────────────┐          │      │
-│  │   Behavior    │ ──► │  Animation   │ ◄────────┘      │
-│  │ Utility Engine│     │  Controller  │                 │
+│  │  Behavior &   │ ──► │  Animation   │ ◄────────┘      │
+│  │ Skill Engine  │     │  Controller  │                 │
 │  └───────────────┘     └──────┬───────┘                 │
 │                               │                         │
 │  ┌───────────────┐     ┌──────▼───────┐                 │
@@ -146,9 +306,10 @@ Host Webpage (DOM)
 | Option | Type | Description |
 | :--- | :--- | :--- |
 | `name` | `string` | Name of the character (e.g. `"Boncuk"`). |
-| `species` | `string` | Species identifier (`"dog"`, `"cat"`, etc.). |
-| `assets` | `string \| AssetManifest` | Path or manifest for character animations. |
-| `personality` | `PersonalityConfig` | Numerical dimensions (`energy`, `curiosity`, `friendliness`, `playfulness`). |
+| `species` | `string` | Species identifier (`"dog"`, `"cat"`, `"dragon"`, `"robot"`). |
+| `assets` | `string \| AssetManifest` | Path or manifest for character animations & frames. |
+| `personality` | `PersonalityConfig` | Numerical drives (`energy`, `curiosity`, `friendliness`, `playfulness`). |
+| `skills` | `CharacterSkill[]` | Array of custom abilities and executable routines. |
 | `world` | `WorldConfig` | Custom platform and ignored CSS selectors. |
 | `behavior` | `BehaviorConfig` | Decision intervals, action cooldowns, remote AI settings. |
 | `physics` | `PhysicsConfig` | Gravity, walk speed, jump impulse configurations. |
@@ -156,9 +317,11 @@ Host Webpage (DOM)
 #### `PetController` Methods:
 - `pet.start()`: Initializes and starts the runtime simulation.
 - `pet.stop()` / `pet.pause()` / `pet.resume()`: Controls simulation lifecycle.
-- `pet.say(text, durationMs)`: Displays a speech bubble above the pet.
+- `pet.registerSkill(skill)`: Dynamically registers a custom skill.
+- `pet.useSkill(name, ...args)`: Executes a custom skill with cooldown check.
+- `pet.getSkills()`: Returns list of all registered skills.
+- `pet.say(text, durationMs)`: Displays an XSS-sanitized speech bubble above the pet.
 - `pet.bark()` / `pet.jump()` / `pet.walk()` / `pet.sleep()`: Triggers specific actions.
-- `pet.do(action)`: Dispatches arbitrary state machine transitions.
 - `pet.teleport(x, y)`: Instantly repositions the pet in world space.
 - `pet.getState()`: Returns an immutable snapshot of `CharacterState`.
 
@@ -166,7 +329,7 @@ Host Webpage (DOM)
 
 ## 🧪 Testing
 
-Living Web comes with a comprehensive test suite covering physics, collisions, state transitions, utility AI, camera transforms, and DOM scanning:
+Living Web comes with a comprehensive test suite covering physics, collisions, custom skills, state transitions, utility AI, camera transforms, and DOM scanning:
 
 ```bash
 # Run unit & integration tests
@@ -183,10 +346,10 @@ npm run test:coverage
 
 ## 🎮 Running the Local Playground
 
-Experience Living Web on an interactive sample website:
+Experience Living Web on an interactive sample website with the Staircase Obstacle Course and Custom Skills:
 
 ```bash
-# 1. Build the distribution
+# 1. Build distribution bundles
 npm run build
 
 # 2. Start local web server

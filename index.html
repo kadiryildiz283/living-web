@@ -419,9 +419,11 @@
     <div class="btn-group">
       <button class="btn-ctrl" onclick="petClimbStairs()">Parkur Tırman 🧗</button>
       <button class="btn-ctrl" onclick="petFetchBall()">Topu Yakala 🎾</button>
+      <button class="btn-ctrl" onclick="pet.useSkill('ninjaFlip')">Ninja Taklası 🦹</button>
+      <button class="btn-ctrl" onclick="pet.useSkill('dance')">Dans Et 💃</button>
+      <button class="btn-ctrl" onclick="pet.useSkill('feed')">Mama Ver 🍖</button>
+      <button class="btn-ctrl" onclick="pet.useSkill('inspectPage')">Sayfa Analizi 🔍</button>
       <button class="btn-ctrl" onclick="petBark()">Havla 🗣️</button>
-      <button class="btn-ctrl" onclick="petJump()">Zıpla 🦘</button>
-      <button class="btn-ctrl" onclick="petWalk()">Yürü 🚶</button>
       <button class="btn-ctrl" onclick="petSleep()">Uyu 💤</button>
       <button class="btn-ctrl" onclick="togglePause()" id="pause-btn">Duraklat ⏸️</button>
       <button class="btn-ctrl" onclick="toggleDebug()" id="debug-btn">Debug Çizgileri 🔍</button>
@@ -447,7 +449,7 @@
         return;
       }
 
-      // Initialize Living Web pet
+      // Initialize Living Web pet with Custom Skills
       const pet = SDK.createPet({
         name: "Boncuk",
         species: "dog",
@@ -457,7 +459,52 @@
           curiosity: 0.98,
           friendliness: 1.0,
           playfulness: 0.9
-        }
+        },
+        skills: [
+          {
+            name: "ninjaFlip",
+            description: "Acrobatic backflip jump",
+            cooldownMs: 2000,
+            execute: (ctx) => {
+              ctx.say("Ninja Taklası! 🦹✨", 2500);
+              ctx.character.vy = -450;
+              ctx.character.vx = ctx.character.direction === 1 ? 160 : -160;
+              ctx.character.grounded = false;
+            }
+          },
+          {
+            name: "dance",
+            description: "Happy dance routine",
+            cooldownMs: 3000,
+            execute: async (ctx) => {
+              ctx.say("La la la! 💃🎵 Dans zamanı!", 3000);
+              for (let i = 0; i < 4; i++) {
+                ctx.character.direction = ctx.character.direction === 1 ? -1 : 1;
+                ctx.jump();
+                await new Promise(r => setTimeout(r, 400));
+              }
+            }
+          },
+          {
+            name: "feed",
+            description: "Feed pet a treat",
+            cooldownMs: 2000,
+            execute: (ctx) => {
+              ctx.character.behavior.energy = 1.0;
+              ctx.say("Ham ham! Çok lezzetli! 🍖😋 Enerjim %100!", 3500);
+              ctx.bark();
+            }
+          },
+          {
+            name: "inspectPage",
+            description: "Inspect DOM platforms",
+            cooldownMs: 2000,
+            execute: (ctx) => {
+              const count = ctx.world.surfaces.length;
+              ctx.say(`Bu sayfada ${count} adet fiziksel platform keşfettim! 🔍🐾`, 4000);
+            }
+          }
+        ]
       });
 
       window.pet = pet;
