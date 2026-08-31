@@ -36,7 +36,7 @@ export abstract class BehaviorState {
 
 export class IdleState extends BehaviorState {
   public name = ActionState.IDLE;
-  public minDurationMs = 1000;
+  public minDurationMs = 1200;
   public maxDurationMs = 3500;
 
   enter(context: BehaviorContext): void {
@@ -51,35 +51,37 @@ export class IdleState extends BehaviorState {
 
 export class WalkState extends BehaviorState {
   public name = ActionState.WALK;
-  public minDurationMs = 1500;
-  public maxDurationMs = 6000;
+  public minDurationMs = 2500;
+  public maxDurationMs = 7000;
   private lastObstacleCheck: number = 0;
+  private lastDirectionFlip: number = 0;
 
   enter(context: BehaviorContext): void {
     super.enter(context);
-    
-    // Check if there is an attractor zone to head towards
-    const attractor = context.world.findNearbyAttractor(context.character.x, context.character.y, 450);
+    const now = Date.now();
+
+    // Check if there is an attractor zone to head towards with priority
+    const attractor = context.world.findNearbyAttractor(context.character.x, context.character.y, 500);
     if (attractor) {
       const attractorX = attractor.bounds.x + attractor.bounds.width / 2;
       context.character.direction = attractorX > context.character.x ? Direction.RIGHT : Direction.LEFT;
+      this.lastDirectionFlip = now;
     } else if (context.interactions.pointerNear && context.interactions.pointerPosition) {
       context.character.direction =
         context.interactions.pointerPosition.x > context.character.x ? Direction.RIGHT : Direction.LEFT;
-    } else if (Math.random() < 0.3) {
-      context.character.direction = Math.random() > 0.5 ? Direction.RIGHT : Direction.LEFT;
+      this.lastDirectionFlip = now;
     }
 
-    const speed = 75 + context.personality.energy * 40;
+    const speed = 80 + context.personality.energy * 35;
     context.character.vx = context.character.direction === Direction.RIGHT ? speed : -speed;
   }
 
   update(context: BehaviorContext, deltaMs: number): void {
-    const speed = 75 + context.personality.energy * 40;
+    const now = Date.now();
+    const speed = 80 + context.personality.energy * 35;
     context.character.vx = context.character.direction === Direction.RIGHT ? speed : -speed;
 
     // 1. Intelligent Lookahead: Check for stairs, obstacles, or gaps ahead
-    const now = Date.now();
     if (now - this.lastObstacleCheck > 100 && context.character.grounded) {
       this.lastObstacleCheck = now;
 
@@ -89,34 +91,42 @@ export class WalkState extends BehaviorState {
         context.character.width,
         context.character.height,
         context.character.direction,
-        70
+        80
       );
 
       if (obstacle) {
         if (obstacle.type === "step_up" || obstacle.type === "gap") {
-          // Smart Stair / Obstacle Jump
-          const forwardSpeed = speed * 1.35;
+          // Smart Stair / Obstacle Jump with strong forward momentum to cleanly seat on platform
+          const forwardSpeed = Math.max(125, speed * 1.45);
           context.character.vx = context.character.direction === Direction.RIGHT ? forwardSpeed : -forwardSpeed;
-          context.character.vy = -Math.max(300, Math.min(460, 240 + obstacle.heightDiff * 2.2));
+          context.character.vy = -Math.max(340, Math.min(500, 270 + obstacle.heightDiff * 2.3));
           context.character.grounded = false;
 
-          // Transition to JUMP state
           (context as any)._jumpedForObstacle = true;
           return;
         } else if (obstacle.type === "wall") {
-          // Wall in front, turn around
-          context.character.direction =
-            context.character.direction === Direction.RIGHT ? Direction.LEFT : Direction.RIGHT;
-          context.character.vx = context.character.direction === Direction.RIGHT ? speed : -speed;
+          // Impassable wall: Only turn around if we haven't flipped recently (prevents rapid twitching)
+          if (now - this.lastDirectionFlip > 2000) {
+            context.character.direction =
+              context.character.direction === Direction.RIGHT ? Direction.LEFT : Direction.RIGHT;
+            this.lastDirectionFlip = now;
+            context.character.vx = context.character.direction === Direction.RIGHT ? speed : -speed;
+          }
         }
       }
     }
 
-    // 2. Turn around when hitting world boundary
-    if (context.character.x <= context.world.bounds.minX + 10) {
-      context.character.direction = Direction.RIGHT;
-    } else if (context.character.x + context.character.width >= context.world.bounds.maxX - 10) {
-      context.character.direction = Direction.LEFT;
+    // 2. Turn around when hitting world boundary (with hysteresis timer)
+    if (context.character.x <= context.world.bounds.minX + 15 && context.character.direction === Direction.LEFT) {
+      if (now - this.lastDirectionFlip > 1200) {
+        context.character.direction = Direction.RIGHT;
+        this.lastDirectionFlip = now;
+      }
+    } else if (context.character.x + context.character.width >= context.world.bounds.maxX - 15 && context.character.direction === Direction.RIGHT) {
+      if (now - this.lastDirectionFlip > 1200) {
+        context.character.direction = Direction.LEFT;
+        this.lastDirectionFlip = now;
+      }
     }
   }
 
@@ -127,8 +137,8 @@ export class WalkState extends BehaviorState {
 
 export class RunState extends BehaviorState {
   public name = ActionState.RUN;
-  public minDurationMs = 1200;
-  public maxDurationMs = 3500;
+  public minDurationMs = 1500;
+  public maxDurationMs = 4000;
 
   enter(context: BehaviorContext): void {
     super.enter(context);
@@ -148,11 +158,12 @@ export class RunState extends BehaviorState {
         context.character.width,
         context.character.height,
         context.character.direction,
-        90
+        95
       );
 
       if (obstacle && (obstacle.type === "step_up" || obstacle.type === "gap")) {
-        context.character.vy = -Math.max(320, Math.min(480, 260 + obstacle.heightDiff * 2.4));
+        context.character.vx = context.character.direction === Direction.RIGHT ? speed * 1.3 : -speed * 1.3;
+        context.character.vy = -Math.max(340, Math.min(500, 280 + obstacle.heightDiff * 2.4));
         context.character.grounded = false;
       }
     }
@@ -166,14 +177,14 @@ export class RunState extends BehaviorState {
 export class JumpState extends BehaviorState {
   public name = ActionState.JUMP;
   public minDurationMs = 600;
-  public maxDurationMs = 1800;
+  public maxDurationMs = 2000;
 
   enter(context: BehaviorContext): void {
     super.enter(context);
     if (context.character.grounded) {
-      const forwardSpeed = (80 + context.personality.energy * 50) * (context.character.direction === Direction.RIGHT ? 1 : -1);
+      const forwardSpeed = (100 + context.personality.energy * 50) * (context.character.direction === Direction.RIGHT ? 1 : -1);
       context.character.vx = forwardSpeed;
-      context.character.vy = -340 - context.personality.energy * 60;
+      context.character.vy = -360 - context.personality.energy * 60;
       context.character.grounded = false;
     }
   }

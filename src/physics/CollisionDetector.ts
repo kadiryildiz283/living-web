@@ -20,7 +20,7 @@ export class CollisionDetector {
       height: body.height
     };
 
-    const nearby = world.getNearbySurfaces(bodyRect, 30);
+    const nearby = world.getNearbySurfaces(bodyRect, 35);
     const bodyBottom = body.y + body.height;
 
     let bestFloorSurface: WorldSurface | null = null;
@@ -35,11 +35,11 @@ export class CollisionDetector {
         body.x + body.width > surface.x + padding &&
         body.x < surface.x + surface.width - padding;
 
-      // 1. Check Floor Landing (Only consider downward movement or resting)
-      if (horizontalOverlap && body.vy >= 0) {
+      // 1. Check Floor Landing (Only consider downward movement or landing threshold)
+      if (horizontalOverlap) {
         const surfaceTop = surface.y;
-        // Check if body bottom is near surface top (within landing threshold)
-        if (bodyBottom >= surfaceTop - 6 && bodyBottom <= surfaceTop + 18) {
+        // Landing window: near top lip and moving down or level
+        if (bodyBottom >= surfaceTop - 6 && bodyBottom <= surfaceTop + 22 && body.vy >= -60) {
           const dist = Math.abs(bodyBottom - surfaceTop);
           if (dist < minFloorDistance) {
             minFloorDistance = dist;
@@ -48,14 +48,14 @@ export class CollisionDetector {
         }
       }
 
-      // 2. Check Wall Collisions (left/right lateral impact)
-      const verticalOverlap =
-        bodyBottom > surface.y + 6 &&
-        body.y < surface.y + surface.height - 6;
+      // 2. Check Wall Collisions (Only when deeply inside the side of a tall wall, never on top lip)
+      const deeplyInsideVerticalBody =
+        bodyBottom > surface.y + 22 &&
+        body.y < surface.y + surface.height - 4;
 
-      if (verticalOverlap) {
+      if (deeplyInsideVerticalBody && body.vy >= 0) {
         // Moving right into left wall of surface
-        if (body.x + body.width >= surface.x && body.x < surface.x && body.vx > 0) {
+        if (body.x + body.width >= surface.x && body.x < surface.x + 8 && body.vx > 0) {
           collisions.push({
             type: CollisionType.WALL,
             surface,
@@ -64,7 +64,7 @@ export class CollisionDetector {
           });
         }
         // Moving left into right wall of surface
-        else if (body.x <= surface.x + surface.width && body.x + body.width > surface.x + surface.width && body.vx < 0) {
+        else if (body.x <= surface.x + surface.width && body.x + body.width > surface.x + surface.width - 8 && body.vx < 0) {
           collisions.push({
             type: CollisionType.WALL,
             surface,

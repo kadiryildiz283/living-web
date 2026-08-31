@@ -25,9 +25,18 @@ export class CollisionResolver {
           landed = true;
         }
 
-        // Lock vertically to surface top directly to eliminate floating-point jitter
+        // Lock vertically to surface top directly
         body.y = collision.surface.y - body.height;
         body.vy = 0;
+
+        // Auto-center / snap inward safely onto the platform if landing on outer edge
+        const minSafeX = collision.surface.x + 4;
+        const maxSafeX = Math.max(minSafeX, collision.surface.x + collision.surface.width - body.width - 4);
+        if (body.x < minSafeX) {
+          body.x = minSafeX;
+        } else if (body.x > maxSafeX) {
+          body.x = maxSafeX;
+        }
       } else if (collision.type === CollisionType.WALL) {
         hitWall = true;
         if (collision.normal.x < 0) {
