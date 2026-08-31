@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Living Web — Showcase</title>
-  <link rel="stylesheet" href="/index.html">
+  <title>Living Web — Extended Showcase</title>
   <style>
     :root {
       --primary: #6366f1;
@@ -21,78 +20,76 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg);
       color: var(--text);
-      line-height: 1.6;
+      line-height: 1.5;
       min-height: 100vh;
-      overflow-x: hidden;
+      overflow: hidden;
     }
     header {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(15, 23, 42, 0.92);
-      backdrop-filter: blur(12px);
+      background: rgba(15, 23, 42, 0.95);
       border-bottom: 1px solid var(--border);
-      padding: 0.8rem 1.5rem;
+      padding: 0.6rem 1.5rem;
       display: flex; justify-content: space-between; align-items: center;
     }
     .logo {
-      font-size: 1.3rem; font-weight: 700;
+      font-size: 1.25rem; font-weight: 700;
       background: linear-gradient(135deg, #a855f7, #6366f1, #38bdf8);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
-    main { max-width: 900px; margin: 1.5rem auto; padding: 0 1rem; }
+    main { max-width: 860px; margin: 1rem auto; padding: 0 1rem; }
     .hero {
       background: linear-gradient(135deg, #1e1b4b, #312e81);
       border: 1px solid #4338ca;
       border-radius: 0.75rem;
-      padding: 2.2rem 1.5rem;
-      margin-bottom: 1.5rem;
+      padding: 1.8rem 1.2rem;
+      margin-bottom: 1.2rem;
       text-align: center;
     }
-    .hero h1 { font-size: 2rem; margin-bottom: 0.5rem; }
-    .hero p { color: #cbd5e1; font-size: 1rem; margin-bottom: 1rem; }
+    .hero h1 { font-size: 1.8rem; margin-bottom: 0.4rem; }
+    .hero p { color: #cbd5e1; font-size: 0.95rem; margin-bottom: 0.8rem; }
     .toy-box {
       display: inline-flex; align-items: center; gap: 0.5rem;
-      background: rgba(236, 72, 153, 0.2); border: 2px dashed #ec4899;
-      color: #f472b6; padding: 0.5rem 1.2rem; border-radius: 9999px; font-weight: 600;
+      background: rgba(236, 72, 153, 0.25); border: 2px dashed #ec4899;
+      color: #f472b6; padding: 0.4rem 1.1rem; border-radius: 9999px; font-weight: 600; font-size: 0.9rem;
     }
     .obstacle-course {
-      position: relative; height: 260px;
-      background: rgba(30, 41, 59, 0.6);
+      position: relative; height: 230px;
+      background: rgba(30, 41, 59, 0.7);
       border: 1px solid var(--border);
       border-radius: 0.75rem;
-      padding: 0.75rem;
+      padding: 0.6rem;
     }
-    .obstacle-title { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .obstacle-title { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.4rem; }
     .step-1 {
-      position: absolute; left: 40px; top: 190px;
-      width: 140px; height: 35px; background: #10b981;
+      position: absolute; left: 30px; top: 165px;
+      width: 130px; height: 35px; background: #10b981;
       border-radius: 6px; display: flex; align-items: center; justify-content: center;
-      font-weight: 700; color: white;
+      font-weight: 700; color: white; font-size: 0.85rem;
     }
     .step-2 {
-      position: absolute; left: 220px; top: 130px;
-      width: 140px; height: 35px; background: #3b82f6;
+      position: absolute; left: 200px; top: 115px;
+      width: 130px; height: 35px; background: #3b82f6;
       border-radius: 6px; display: flex; align-items: center; justify-content: center;
-      font-weight: 700; color: white;
+      font-weight: 700; color: white; font-size: 0.85rem;
     }
     .step-3 {
-      position: absolute; left: 400px; top: 70px;
+      position: absolute; left: 370px; top: 60px;
       width: 150px; height: 35px; background: #8b5cf6;
       border-radius: 6px; display: flex; align-items: center; justify-content: center;
-      font-weight: 700; color: white;
+      font-weight: 700; color: white; font-size: 0.85rem;
     }
     .step-4 {
-      position: absolute; left: 590px; top: 120px;
-      width: 150px; height: 35px; background: #f59e0b;
+      position: absolute; left: 560px; top: 115px;
+      width: 140px; height: 35px; background: #f59e0b;
       border-radius: 6px; display: flex; align-items: center; justify-content: center;
-      font-weight: 700; color: white;
+      font-weight: 700; color: white; font-size: 0.85rem;
     }
   </style>
   <script src="/dist/living-web.global.js"></script>
 </head>
 <body>
-  <header data-living-platform>
+  <header data-living-ignore>
     <div class="logo">🐾 Living Web</div>
-    <div style="font-size: 0.9rem; color: #94a3b8;">Autonomous Browser Agent Demo</div>
+    <div style="font-size: 0.85rem; color: #94a3b8;">Autonomous Browser Agent Demo</div>
   </header>
 
   <main>
@@ -100,16 +97,16 @@
       <h1>Turn Any Website Into a Living World</h1>
       <p>Zero-physics autonomous game characters living directly on your DOM.</p>
       <div class="toy-box" data-living-attractor="squeaky-ball" id="ball">
-        <span>🎾</span> Interactive Ball
+        <span>🎾</span> Interaktif Top (Attractor)
       </div>
     </section>
 
     <section class="obstacle-course" data-living-platform id="staircase">
-      <div class="obstacle-title">Staircase Obstacle Course (Smart Multi-Tier Navigation)</div>
-      <div class="step-1" data-living-platform id="s1">Step 1 🟢</div>
-      <div class="step-2" data-living-platform id="s2">Step 2 🔵</div>
-      <div class="step-3" data-living-platform id="s3">Step 3 (Summit) 🟣</div>
-      <div class="step-4" data-living-platform id="s4">Step 4 🟠</div>
+      <div class="obstacle-title">Merdiven Parkuru (Mekânsal Yapay Zeka ile Engel Tırmanışı)</div>
+      <div class="step-1" data-living-platform id="s1">Basamak 1 🟢</div>
+      <div class="step-2" data-living-platform id="s2">Basamak 2 🔵</div>
+      <div class="step-3" data-living-platform id="s3">Zirve Basamağı 🟣</div>
+      <div class="step-4" data-living-platform id="s4">İniş 🟠</div>
     </section>
   </main>
 
@@ -120,42 +117,63 @@
         name: "Boncuk",
         species: "dog",
         assets: "/pets/boncuk/",
-        personality: { energy: 1.0, curiosity: 1.0, friendliness: 1.0, playfulness: 1.0 }
+        personality: { energy: 0.9, curiosity: 1.0, friendliness: 1.0, playfulness: 0.9 }
       });
       window.pet = pet;
       pet.start();
 
-      // Choreographed showcase sequence
-      // 0s: Hero Banner Walk & Greeting
-      pet.teleport(200, 100);
+      // Timeline Sequence (Total ~12 seconds of rich action)
+      // 0.0s: Hero Banner Walk & Greeting
+      pet.teleport(220, 85);
       pet.setDirection(SDK.Direction.RIGHT);
       pet.walk();
-      pet.say("Hav hav! Living Web'e hoş geldiniz! 🐾", 3000);
+      pet.say("Hav hav! Otonom DOM petiyim! 🐾", 2400);
 
-      // 2.2s: Jump across hero banner
+      // 2.2s: Leaps across towards the interactive ball
       setTimeout(() => {
         pet.jump();
-        pet.say("Hop! Engelleri aşıyorum! 🦘", 2500);
+        pet.say("Topu yakaladım! 🎾", 2000);
       }, 2200);
 
-      // 4.0s: Teleport to Step 1 & Climb Staircase
+      // 4.2s: Teleport to Step 1 & Begins Smart Staircase Climbing
       setTimeout(() => {
         const s1 = document.getElementById("s1");
         const rect = s1.getBoundingClientRect();
         pet.teleport(rect.left + 20, rect.top + window.scrollY - 55);
         pet.setDirection(SDK.Direction.RIGHT);
         pet.walk();
-        pet.say("Merdiven parkurunu tırmanıyorum! 🧗", 3000);
+        pet.say("Basamakları tırmanıyorum! 🧗", 2200);
       }, 4200);
 
-      // 6.0s: Reached Summit
+      // 5.8s: Reached Step 2 and leaps to Step 3 Summit
+      setTimeout(() => {
+        const s2 = document.getElementById("s2");
+        const rect = s2.getBoundingClientRect();
+        pet.teleport(rect.left + 30, rect.top + window.scrollY - 55);
+        pet.setDirection(SDK.Direction.RIGHT);
+        pet.jump();
+      }, 5800);
+
+      // 7.2s: Standing at Summit & Celebrating
       setTimeout(() => {
         const s3 = document.getElementById("s3");
         const rect = s3.getBoundingClientRect();
-        pet.teleport(rect.left + 40, rect.top + window.scrollY - 55);
+        pet.teleport(rect.left + 35, rect.top + window.scrollY - 55);
         pet.setDirection(SDK.Direction.RIGHT);
-        pet.say("Zirvedeyim! 🏆 Harika tırmanış!", 3500);
-      }, 6200);
+        pet.say("Zirveye tırmandım! 🏆", 2200);
+      }, 7200);
+
+      // 9.2s: Sleeping on Summit Step
+      setTimeout(() => {
+        pet.sleep();
+        pet.say("Zzz... Biraz dinleniyorum 💤", 2400);
+      }, 9200);
+
+      // 11.4s: Waking up refreshed & Happy Bark
+      setTimeout(() => {
+        pet.bark();
+        pet.say("Enerjim %100! Hadi gezelim! 🐕✨", 3000);
+      }, 11400);
     });
   </script>
 </body>
