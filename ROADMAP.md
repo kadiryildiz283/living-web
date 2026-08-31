@@ -62,4 +62,4 @@
 
 ## 💡 Proposing New Features
 
-Have an idea for Living Web? Please open a feature request in [GitHub Discussions](https://github.com/kadiryildiz283/live-pet/discussions) or create an issue using the feature request template.
+Have an idea for Living Web? Please open a feature request in [GitHub Discussions](https://github.com/kadiryildiz283/living-web/discussions) or create an issue using the feature request template.

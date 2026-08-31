@@ -4,7 +4,7 @@
 
 **Turn any website into a living, interactive world with autonomous browser agents.**
 
-[![CI Status](https://img.shields.io/badge/CI-Passing-brightgreen.svg)](https://github.com/kadiryildiz283/live-pet/actions)
+[![CI Status](https://img.shields.io/badge/CI-Passing-brightgreen.svg)](https://github.com/kadiryildiz283/living-web/actions)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vitest](https://img.shields.io/badge/Tests-46%20Passed-22c55e.svg?logo=vitest&logoColor=white)](https://vitest.dev/)
